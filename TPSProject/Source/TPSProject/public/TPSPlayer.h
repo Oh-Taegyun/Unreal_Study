@@ -29,6 +29,7 @@ public:
 public:
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 		class USpringArmComponent* springArmComp;
+
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 		class UCameraComponent* tpsCamComp;
 
@@ -37,4 +38,73 @@ public:
 
 	// 상하 회전 입력 처리
 	void LookUp(float value);
+
+	// 이동속도
+	UPROPERTY(EditAnywhere, Category = PlayerSetting)
+		float walkSpeed = 600;
+
+	// 이동 방향
+	FVector direction;
+
+	// 좌우 이동 입력 이벤트 처리 함수
+	void InputHorizontal(float value);
+
+	// 상하 이동 입력 이벤트 처리 함수
+	void InputVertical(float value);
+
+	// 점프 입력 이벤트 처리 함수
+	void InputJump();
+
+	// 플레이어 이동 처리
+	void Move();
+
+	// 총 스켈레탈 메시
+	UPROPERTY(EditAnywhere, Category = GunMesh)
+		class USkeletalMeshComponent* gunMeshComp;
+
+	// 총알 공장
+	UPROPERTY(EditDefaultsOnly, Category = BulletFactory)
+		TSubclassOf<class ABullet> bulletFactory;
+
+	// 총알 발사 처리 함수
+	void InputFire();
+
+	// 스나이퍼건 스태틱메시 추가
+	UPROPERTY(VisibleAnywhere, Category = GunMesh)
+		class UStaticMeshComponent* sniperGunComp;
+
+	// 유탄총 사용 중인지 여부
+	bool bUsingGrenadeGun = true;
+
+	// 유탄총으로 변경
+	void ChangeToGrenadeGun();
+
+	// 스나이퍼건으로 변경
+	void ChangeToSniperGun();
+
+	// 스나이퍼 조준
+	void SniperAim();
+
+	// 스나이퍼 조준 중인지 여부
+	bool bSniperAim = false;
+
+	// 스나이퍼 UI 위젯 공장
+	// 항상 왜 '공장'이라고 표시하고 블루프린트를 할당하는지 궁금했는데
+	// 뷰 포트에 표현되는게 제품(인스턴스)이라면 제품을 만들 공장(원본)이 필요하니까....
+	UPROPERTY(EditDefaultsOnly, Category = SniperUI)
+		TSubclassOf<class UUserWidget> sniperUIFactory;
+
+	// 스나이퍼 UI 위젯 인스턴스
+	class UUserWidget* _sniperUI;
+
+	// 총알 파편 효과 공장
+	UPROPERTY(EditAnywhere, Category = BulletEffect)
+		class UParticleSystem* bulletEffectFactory;
+
+	// 일반 조준 크로스헤어 UI 위젯
+	UPROPERTY(EditDefaultsOnly, Category = SniperUI)
+		TSubclassOf<class UUserWidget> crosshairUIFactory;
+
+	// 크로스헤어 인스턴스
+	class UUserWidget* _crosshairUI;
 };
