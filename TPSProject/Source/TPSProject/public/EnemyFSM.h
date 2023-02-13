@@ -3,13 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
+#include "Components/ActorComponent.h"
 #include "EnemyFSM.generated.h"
 
-// 사용할 상태 정의
+// 사용할 상태 정의 
+// UENUM 매크로는 언리얼에서 'EEnemyState' 라는 새로운 열거형 타입이 만들어진 것을 알려줍니다. BlueprintType 인자를 할당하여 블루프린트에서도 사용할 수 있도록 합니다.
 UENUM(BlueprintType)
-
-
 // UENUM 매크로를 이용하여 언리얼에서 'EEnemyState'라는 새로운 열거형 타입이 만들어진 것을 알려주고 상태는 5가지이기 때문에 enum class가 사용할 크기는 uint8로 할당해 줍니다.
 // 참고로 enum 타입은 이름 앞에 접두어 'E'를 붙여주어야 합니다. 그래서 'EEnemyState'라는 이름을 사용합니다. 
 enum class EEnemyState : uint8
@@ -21,28 +20,78 @@ enum class EEnemyState : uint8
 	Die,
 };
 
-// BlueprintType 인자를 할당하여 블루프린트에서도 사용할 수 있도록 합니다.
-UCLASS(ClassGroup = (Custom), meta=(BlueprintSpawnableComponent))
 
-class TPSPROJECT_API AEnemyFSM : public AActor
+
+UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+class TPSPROJECT_API UEnemyFSM : public UActorComponent
 {
 	GENERATED_BODY()
-	
+
 public:	
-	// Sets default values for this actor's properties
-	AEnemyFSM();
-	
+	// Sets default values for this component's properties
+	UEnemyFSM();
+
 protected:
-	// Called when the game starts or when spawned
+	// Called when the game starts
 	virtual void BeginPlay() override;
 
 public:	
 	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 public:
 	// 현재 상태를 기억할 맴버 변수 mstate와 각 상태를 처리할 함수를 public 접근자로 선언해 주겠습니다. mState 변수는 블루프린트에서 접근할 수 있도록 BlueprintReadOnly 속성을 추가합니다
 	UPROPERTY(visibleAnywhere, BlueprintReadOnly, Category = FSM)
 		EEnemyState mState = EEnemyState::Idel;
 
+	// 대기 상태
+	void IdleState();
+	// 이동 상태
+	void MoveState();
+	// 공격 상태
+	void AttackState();
+	// 피격 상태
+	void DamageState();
+	// 죽음 상태
+	void DieState();
+
+	// 대기 시간
+	UPROPERTY(EditDefaultsOnly, Category = FSM)
+		float idleDelayTime = 2;
+	// 경과 시간
+	float currentTime = 0;
+
+	// 타깃 
+	UPROPERTY(VisibleAnywhere, Category = FSM)
+		class ATPSPlayer* target;
+
+	// 소유 액터
+	// 타깃 쪽으로 이동하려거든 목적지에 따른 방향이 필요하다 
+	// 타깃 방향 = 목적지 - 나의 위치
+	UPROPERTY()
+		class AEnemy* me;
+
+	// 공격 범위
+	UPROPERTY(EditAnywhere, Category = FSM)
+		float attackRange = 150.0f;
+
+	UPROPERTY(EditAnywhere, Category = FSM)
+		float attackDelayTime = 2.0f;
+
+	// 피격 알림 이벤트 함수
+	void OnDamageProcess();
+
+	// 체력
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = FSM)
+		int32 hp = 3;
+
+	// 피격 대기 시간
+	UPROPERTY(EditAnywhere, Category = FSM)
+		float damageDelayTime = 2.0f;
+
+	// 아래로 사라지는 속도
+	UPROPERTY(EditAnywhere, Category = FSM)
+		float dieSpeed = 50.0f;
 };
+
+ 

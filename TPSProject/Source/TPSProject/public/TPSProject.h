@@ -12,4 +12,4 @@ DECLARE_LOG_CATEGORY_EXTERN(TPS, Log, All);
 
 // 원하는 로그 데이터를 출력할 수 있는 매크로
 // 사용법 PRINT_LOG(TEXT("원하는 텍스트 1"), TEXT("원하는 텍스트 2"), ...)
-#define PRINT_LOG(fmt, ...) UE_LOG(TPS, Warning, TEXT("%s %s"), *CALLINFO, *FString::Printf(fmt, ##__VA_ARGS__)
+#define PRINT_LOG(fmt, ...) UE_LOG(TPS, Warning, TEXT("%s %s"), *CALLINFO, *FString::Printf(fmt, ##__VA_ARGS__))
